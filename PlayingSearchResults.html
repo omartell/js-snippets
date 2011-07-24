@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<script type="text/javascript">
+			function include(src) {
+				var script = document.createElement("script");
+				script.src = src;
+				document.getElementsByTagName("head")[0].appendChild(script);
+			}
+
+			function searchCallback(results) {
+				handleSearchResults(results.ResultSet.Result);
+			}
+
+			function grandParent(element, grandParentId) {
+				if (element === document.body) {
+					return null;
+				}
+
+				if (element.id === grandParentId) {
+					return element;
+				}
+
+				if (element.parentNode === null) {
+					return null;
+				}
+
+				if (element.parentNode.id === grandParentId) {
+					return element.parentNode;
+				}
+
+				return grandParent(element.parentNode, grandParentId);
+			}
+
+			window.addEventListener("load", function() {
+
+				include("http://search.yahooapis.com/WebSearchService/V1/webSearch?appid=gsmCSg7V34FvrDNFCuO2_vfMeoQ.z1OypeQTRSF1sD2djAifqSYqDk1GFhLMqeUKUX5MUus-&query=JavaScript&output=json&callback=searchCallback");
+
+			},
+			false);
+		</script>
+	</head>
+	<body>
+		<ul id="searchPlaceHolder">
+		</ul>
+	</body>
+	<script type="text/javascript">
+		var handleSearchResults = (function() {
+			var rootList = document.getElementById("searchPlaceHolder");
+			var fragment = document.createDocumentFragment();
+
+			var createSummary = function(data) {
+				var container = document.createElement("div");
+				container.id = "summary";
+				container.style.display = "block";
+				var summaryRoot = document.createElement("ul");
+				var summaryItem = document.createElement("li");
+				var summary = document.createElement("p");
+				summary.appendChild(document.createTextNode(data));
+				summaryItem.appendChild(summary);
+				summaryRoot.appendChild(summaryItem);
+				container.appendChild(summaryRoot);
+				return container;
+			}
+
+			var getRootItem = function(evt) {
+				var rootItem = evt.target.id === "rootItem" ? evt.target : grandParent(evt.target, "rootItem");
+				return rootItem;
+			}
+
+			var onMouseOverHandler = function(e) {
+				e.stopPropagation();
+				if (this === e.target) {
+					return;
+				}
+				var rootItem = getRootItem(e);
+				var currentSummary = rootItem.querySelector("#summary");
+				if (currentSummary !== null) {
+					currentSummary.style.display = "block";
+					return;
+				};
+				rootItem.appendChild(createSummary(rootItem.data));
+			};
+
+			var onMouseOutHandler = function(e) {
+				e.stopPropagation();
+				if (this === e.target) {
+					return;
+				}
+				var rootItem = getRootItem(e);
+				rootItem.querySelector("#summary").style.display = "none";
+			};
+
+			rootList.addEventListener("mouseover", onMouseOverHandler, false);
+			rootList.addEventListener("mouseout", onMouseOutHandler, false);
+
+			return function(results) {
+
+				if (results.length === 0) {
+					rootList.appendChild(fragment);
+					return;
+				}
+
+				var newItem = results[0];
+				var item = document.createElement("li");
+				item.id = "rootItem";
+				var header = document.createElement("h1");
+				var link = document.createElement("a");
+				link.appendChild(document.createTextNode(newItem.Title));
+				item.data = newItem.Summary;
+				link.href = newItem.ClickUrl;
+				header.appendChild(link);
+				item.appendChild(header);
+				results.splice(0, 1);
+				fragment.appendChild(item);
+				arguments.callee(results);
+			};
+		})();
+	</script>
+
+</html>
