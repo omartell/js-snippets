@@ -1,91 +1,95 @@
 <html>
-	<head>
-		<style type="text/css">
-			p{
-				font-family: Helvetica;
-				font-size: 24px;
-			}
-		</style>
-	
-		<script type="text/javascript">
-			var XHR = (function(){
-			var thisXHR = {};
-			var legacyIds = ['MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'];	
-			
-			thisXHR.request =  function(config, callback){
-					var newRequest;
-					if(typeof window.XMLHttpRequest !== "undefined"){
-						newRequest = new XMLHttpRequest();
-					}
-					else{
-						for(var i =0; i < legacyIds.length; i++){
-							try{
-								newRequest = new ActiveXObject(ids[i]);
-								break;
-							}
-							catch(e){}
-						}
-					}
-					
-					if(!newRequest){
-						throw new Error("Your browser does not support XHR");
-					}
+<head>
+    <style type="text/css">
+        p {
+            font-family: Helvetica;
+            font-size: 24px;
+        }
+    </style>
 
-					newRequest.onreadystatechange = function(){
-						if(newRequest.readyState < 4){
-							return;
-						}
-						
-						if(newRequest.status !== 200){
-							config.onError(newRequest.responseText);
-							return;
-						}
-						
-						config.onOK(newRequest.responseText);
-					};
-					
-					newRequest.open(config.type, config.resource, true);
-					newRequest.send(config.data);
-				};
-				
-				return thisXHR;
-			})();
-			
-			var getTweets = function(){
-				XHR.request({
-				type: "GET",
-				resource: "http://api.twitter.com/1/statuses/public_timeline.json",
-				data: "",
-				onError: function(response){
-					console.log("Ooops!");
-				},
-				onOK: function(response){
-					var tweets = JSON.parse(response);
-					var fragment = document.createDocumentFragment();
-					
-					for(var i = tweets.length-1; i >=0 ; i--){
-						var tweet = document.createElement("p");
-						tweet.style.color = (i % 2) === 0 ? "black":"#736F6E";
-						tweet.appendChild(document.createTextNode(tweets[i].text));
-						tweet.appendChild(document.createElement("br"));
-						fragment.appendChild(tweet);
-					}
-					
-					var results = document.getElementById("results");
-					results.insertBefore(fragment.cloneNode(true), results.firstChild);
-				}});
-			};	
-			
-			window.addEventListener("load", function(){
-					getTweets();
-					setInterval(function(){getTweets();}, 1000 * 10);
-			});
-			
-		</script>
-	</head>
-	<body>
-		<div id="results">
-		
-		</div>
-	</body>
+    <script type="text/javascript">
+        var XHR = (function () {
+            var thisXHR = {};
+            var legacyIds = ['MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'];
+
+            thisXHR.request = function (config, callback) {
+                var newRequest;
+                if (typeof window.XMLHttpRequest !== "undefined") {
+                    newRequest = new XMLHttpRequest();
+                }
+                else {
+                    for (var i = 0; i < legacyIds.length; i++) {
+                        try {
+                            newRequest = new ActiveXObject(ids[i]);
+                            break;
+                        }
+                        catch (e) {
+                        }
+                    }
+                }
+
+                if (!newRequest) {
+                    throw new Error("Your browser does not support XHR");
+                }
+
+                newRequest.onreadystatechange = function () {
+                    if (newRequest.readyState < 4) {
+                        return;
+                    }
+
+                    if (newRequest.status !== 200) {
+                        config.onError(newRequest.responseText);
+                        return;
+                    }
+
+                    config.onOK(newRequest.responseText);
+                };
+
+                newRequest.open(config.type, config.resource, true);
+                newRequest.send(config.data);
+            };
+
+            return thisXHR;
+        })();
+
+        var getTweets = function () {
+            XHR.request({
+                type: "GET",
+                resource: "http://api.twitter.com/1/statuses/public_timeline.json",
+                data: "",
+                onError: function (response) {
+                    console.log("Ooops!");
+                },
+                onOK: function (response) {
+                    var tweets = JSON.parse(response);
+                    var fragment = document.createDocumentFragment();
+
+                    for (var i = tweets.length - 1; i >= 0; i--) {
+                        var tweet = document.createElement("p");
+                        tweet.style.color = (i % 2) === 0 ? "black" : "#736F6E";
+                        tweet.appendChild(document.createTextNode(tweets[i].text));
+                        tweet.appendChild(document.createElement("br"));
+                        fragment.appendChild(tweet);
+                    }
+
+                    var results = document.getElementById("results");
+                    results.insertBefore(fragment.cloneNode(true), results.firstChild);
+                }
+            });
+        };
+
+        window.addEventListener("load", function () {
+            getTweets();
+            setInterval(function () {
+                getTweets();
+            }, 1000 * 10);
+        });
+
+    </script>
+</head>
+<body>
+<div id="results">
+
+</div>
+</body>
 </html>

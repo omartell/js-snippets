@@ -1,148 +1,148 @@
 <html>
 <head>
-<script type="text/javascript">
-	var myApp = { Utils:{}};
+    <script type="text/javascript">
+        var myApp = {Utils: {}};
 
-	(function(host){
-		MyEvent = {};
-		var callbackEvent = function(evt){
-				evt = evt || window.event || {};
+        (function (host) {
+            MyEvent = {};
+            var callbackEvent = function (evt) {
+                evt = evt || window.event || {};
 
-				var newEvt = {};
-				newEvt.original = evt;
+                var newEvt = {};
+                newEvt.original = evt;
 
-				newEvt.getTarget = function(){
-						if(typeof evt.srcElement !== "undefined"){
-							return evt.srcElement;
-						}
+                newEvt.getTarget = function () {
+                    if (typeof evt.srcElement !== "undefined") {
+                        return evt.srcElement;
+                    }
 
-						if(typeof evt.target !== "undefined"){
-							return evt.target;
-						}
-						return null;
-					};
+                    if (typeof evt.target !== "undefined") {
+                        return evt.target;
+                    }
+                    return null;
+                };
 
-				newEvt.stopPropagation = function(){
-						if(typeof evt.stopPropagation !== "undefined"){
-							evt.stopPropagation();
-							return true;
-						}
+                newEvt.stopPropagation = function () {
+                    if (typeof evt.stopPropagation !== "undefined") {
+                        evt.stopPropagation();
+                        return true;
+                    }
 
-						if(typeof evt.cancelBubble !== "undefined"){
-							evt.cancelBubble = true;
-							return true;
-						}
-						return false;
-					};
+                    if (typeof evt.cancelBubble !== "undefined") {
+                        evt.cancelBubble = true;
+                        return true;
+                    }
+                    return false;
+                };
 
-				newEvt.preventDefault = function(){
-						if(typeof evt.preventDefault !== "undefined"){
-							evt.preventDefault();
-							return true;
-						}
+                newEvt.preventDefault = function () {
+                    if (typeof evt.preventDefault !== "undefined") {
+                        evt.preventDefault();
+                        return true;
+                    }
 
-						if(evt.returnValue !== "undefined"){
-							evt.returnValue =  false;
-							return true;
-						}
-						return false;
-					};
+                    if (evt.returnValue !== "undefined") {
+                        evt.returnValue = false;
+                        return true;
+                    }
+                    return false;
+                };
 
-			return newEvt;
-		};
+                return newEvt;
+            };
 
-		var wrapperHandler = function(node, handler){
-			handler.stable = function(evt){
-				handler.call(node, callbackEvent(evt));
-			};
-			return handler.stable;
-		};
+            var wrapperHandler = function (node, handler) {
+                handler.stable = function (evt) {
+                    handler.call(node, callbackEvent(evt));
+                };
+                return handler.stable;
+            };
 
-		var listeningFor = function(element){
-			var node = element;
+            var listeningFor = function (element) {
+                var node = element;
 
-			return function(eventname, handler){
+                return function (eventname, handler) {
 
-				if(typeof node === "undefined"){
-					throw new Error("You need to call on first");
-				}	
+                    if (typeof node === "undefined") {
+                        throw new Error("You need to call on first");
+                    }
 
-				if(node.addEventListener){
-					node.addEventListener(eventname, wrapperHandler(node, handler),false);
-					return node;	
-				}
-								
-				if(node.attachEvent){
-					node.attachEvent("on"+ eventname,wrapperHandler(node, handler));
-					return node;
-				}
+                    if (node.addEventListener) {
+                        node.addEventListener(eventname, wrapperHandler(node, handler), false);
+                        return node;
+                    }
 
-				node["on"+ eventname] = wrapperhandler(node, handler);
-				return node;
-			};
-		};
+                    if (node.attachEvent) {
+                        node.attachEvent("on" + eventname, wrapperHandler(node, handler));
+                        return node;
+                    }
 
-		var stopListeningFor = function(element){
-			var node = element;
-			return function(eventname, handler){
+                    node["on" + eventname] = wrapperhandler(node, handler);
+                    return node;
+                };
+            };
 
-				if(typeof node === "undefined"){
-					throw new Error("You need to call on first");
-				}	
+            var stopListeningFor = function (element) {
+                var node = element;
+                return function (eventname, handler) {
 
-				if(node.removeEventListener){
-					node.removeEventListener(eventname, handler.stable);
-					return;
-				}
+                    if (typeof node === "undefined") {
+                        throw new Error("You need to call on first");
+                    }
 
-				if(node.detachEvent){
-					node.detachEvent("on"+eventname, handler.stable);
-					return;
-				}
-					
-				node["on" + eventname] = null;
-				return node;
-			}
-		};
+                    if (node.removeEventListener) {
+                        node.removeEventListener(eventname, handler.stable);
+                        return;
+                    }
+
+                    if (node.detachEvent) {
+                        node.detachEvent("on" + eventname, handler.stable);
+                        return;
+                    }
+
+                    node["on" + eventname] = null;
+                    return node;
+                }
+            };
 
 
-		MyEvent.on = function(node){
-			node.listenFor = listeningFor(node);
-			node.stopListeningFor = stopListeningFor(node);
-			return node;
-		};
+            MyEvent.on = function (node) {
+                node.listenFor = listeningFor(node);
+                node.stopListeningFor = stopListeningFor(node);
+                return node;
+            };
 
-		host.myEvent = MyEvent;
+            host.myEvent = MyEvent;
 
-	})(myApp.Utils);
+        })(myApp.Utils);
 
-	var $ = myApp.Utils;
-</script>
+        var $ = myApp.Utils;
+    </script>
 </head>
 <body>
-	<div id="first">
-		<a href= "http://www.google.com" id="pFirst">"First"</a>
-	</div>
-	<br/>
-	<div id="second">
-		<p id="pSecond">"Second"</p>
-	</div>
+<div id="first">
+    <a href="http://www.google.com" id="pFirst">"First"</a>
+</div>
+<br/>
+
+<div id="second">
+    <p id="pSecond">"Second"</p>
+</div>
 </body>
 <script type="text/javascript">
-	function handler(evt){
-			alert("you clicked me too!");
-			this.stopListeningFor("click", handler);
-	};
+    function handler(evt) {
+        alert("you clicked me too!");
+        this.stopListeningFor("click", handler);
+    }
+    $.myEvent.on(window).listenFor("load", function (evt) {
+        $.myEvent.on(document.getElementById("pFirst")).listenFor("click", function (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            this.innerHTML = "i am in you paragraph deleting your letters";
+        });
 
-	$.myEvent.on(window).listenFor("load", function(evt){
-		$.myEvent.on(document.getElementById("pFirst")).listenFor("click", function(evt){
-			evt.stopPropagation();
-			evt.preventDefault();
-			this.innerHTML = "i am in you paragraph deleting your letters";
-		});
 
-		
-		$.myEvent.on(document.getElementById("second")).listenFor("click", handler);
-	});
-	
+        $.myEvent.on(document.getElementById("second")).listenFor("click", handler);
+    });
+
 </script>

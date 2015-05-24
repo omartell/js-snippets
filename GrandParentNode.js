@@ -1,19 +1,19 @@
 function grandParent(element, grandParentId) {
-	if (element === document.body) {
-		return null;
-	}
+    if (element === document.body) {
+        return null;
+    }
 
-	if (element.id === grandParentId) {
-		return element;
-	}
+    if (element.id === grandParentId) {
+        return element;
+    }
 
-	if (element.parentNode === null) {
-		return null;
-	}
+    if (element.parentNode === null) {
+        return null;
+    }
 
-	if (element.parentNode.id === grandParentId) {
-		return element.parentNode;
-	}
+    if (element.parentNode.id === grandParentId) {
+        return element.parentNode;
+    }
 
-	return grandParent(element.parentNode, grandParentId);
+    return grandParent(element.parentNode, grandParentId);
 }
